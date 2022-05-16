@@ -77,8 +77,8 @@ int	init_data(t_data *data, int argc, char **argv)
 	data->state = ALIVE;
 	if (argc == 6)
 		data->num_must_eat = ft_modified_atoi(argv[5]);
-	if (data->philo_num <= 0 || data->time_die <= 0|| data->time_eat <= 0
-		|| data->time_sleep <= 0 || (argc == 6 && data->num_must_eat <0))
+	if (data->philo_num <= 0 || data->time_die <= 0 || data->time_eat <= 0
+		|| data->time_sleep <= 0 || (argc == 6 && data->num_must_eat < 0))
 		return (1);
 	data->fork = malloc(data->philo_num * sizeof(pthread_mutex_t));
 	if (!data->fork)
