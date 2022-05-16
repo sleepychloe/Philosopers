@@ -54,6 +54,7 @@ int	take_two_forks(t_philo *philo)
 	pthread_mutex_lock(philo->right_fork);
 	if (death_checker(philo))
 	{
+		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);
 		return (1);
 	}
@@ -69,8 +70,8 @@ void	*philo_start(void *param)
 	philo = param;
 	cnt_eat = -1;
 	philo_eat(philo, &cnt_eat);
-	usleep((philo->id + 1 % 2) * 200);
-	while (cnt_eat < philo->data->num_must_eat && death_checker(philo) == 0)
+	usleep((philo->id % 2) * 200);
+	while (cnt_eat != philo->data->num_must_eat && death_checker(philo) == 0)
 	{
 		philo_print(philo, "is thinking");
 		if (take_two_forks(philo))

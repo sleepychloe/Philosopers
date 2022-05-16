@@ -73,16 +73,16 @@ int	init_data(t_data *data, int argc, char **argv)
 	data->time_die = ft_modified_atoi(argv[2]);
 	data->time_eat = ft_modified_atoi(argv[3]);
 	data->time_sleep = ft_modified_atoi(argv[4]);
-	if (!data->philo_num || !data->time_die || !data->time_eat
-		|| !data->time_sleep)
-		return (1);
+	data->num_must_eat = -1;
+	data->state = ALIVE;
 	if (argc == 6)
-	{
 		data->num_must_eat = ft_modified_atoi(argv[5]);
-		if (!data->num_must_eat)
-			return (1);
-	}
+	if (data->philo_num <= 0 || data->time_die <= 0|| data->time_eat <= 0
+		|| data->time_sleep <= 0 || (argc == 6 && data->num_must_eat <0))
+		return (1);
 	data->fork = malloc(data->philo_num * sizeof(pthread_mutex_t));
+	if (!data->fork)
+		return (1);
 	if (init_data_fy_norminette(data))
 	{
 		free(data->fork);
@@ -98,11 +98,7 @@ int	main(int argc, char **argv)
 	t_philo		*philo;
 	pthread_t	*thread_philo;
 
-	if (!(argc == 5 || argc == 6) || ft_modified_atoi(argv[1]) <= 0
-		|| ft_modified_atoi(argv[2]) <= 0 || ft_modified_atoi(argv[3]) <= 0
-		|| ft_modified_atoi(argv[4]) <= 0
-		|| (argc == 6 && ft_modified_atoi(argv[5]) <= 0)
-		|| init_data(&data, argc, argv))
+	if (argc < 5 || argc > 6 || init_data(&data, argc, argv))
 	{
 		err_msg();
 		return (1);
