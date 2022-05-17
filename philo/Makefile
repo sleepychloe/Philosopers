@@ -6,7 +6,7 @@
 #    By: yhwang <yhwang@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/16 04:37:55 by yhwang            #+#    #+#              #
-#    Updated: 2022/05/16 05:27:15 by yhwang           ###   ########.fr        #
+#    Updated: 2022/05/17 16:55:24 by yhwang           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ RM = rm -f
 
 FILES = utils \
 		time \
+		init \
 		philo_utils \
 		philo \
 		main

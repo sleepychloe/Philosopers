@@ -6,7 +6,7 @@
 /*   By: yhwang <yhwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 23:42:49 by yhwang            #+#    #+#             */
-/*   Updated: 2022/05/16 00:45:28 by yhwang           ###   ########.fr       */
+/*   Updated: 2022/05/17 16:09:40 by yhwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,14 @@ int	init_philo(t_philo *philo, t_data *data, int i)
 	return (0);
 }
 
+void	philo_num_is_one(t_data *data)
+{
+	printf("%d %d %s\n", 1, 1, "is thinking");
+	printf("%d %d %s\n", 1, 1, "has taken a fork");
+	printf("%d ", data->time_die + 1);
+	printf("%d %s\n", 1, "has died");
+}
+
 int	setting_up_philo(t_data *data, t_philo *philo, pthread_t *thread_philo)
 {
 	int	i;
@@ -32,6 +40,12 @@ int	setting_up_philo(t_data *data, t_philo *philo, pthread_t *thread_philo)
 	i = 0;
 	while (i < data->philo_num)
 	{
+		if (data->philo_num == 1)
+		{
+			philo_num_is_one(data);
+			ft_free(2, data, philo, thread_philo);
+			return (1);
+		}
 		if (init_philo(&philo[i], data, i))
 			return (1);
 		if (pthread_create(&thread_philo[i], NULL, philo_start, &philo[i]))
@@ -48,50 +62,6 @@ int	setting_up_philo(t_data *data, t_philo *philo, pthread_t *thread_philo)
 	return (0);
 }
 
-int	init_data_fy_norminette(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->philo_num)
-	{
-		if (pthread_mutex_init(&data->fork[i], NULL))
-			return (1);
-		i++;
-	}
-	if (pthread_mutex_init(&data->changing_state, NULL))
-		return (1);
-	if (pthread_mutex_init(&data->printing, NULL))
-		return (1);
-	return (0);
-}
-
-int	init_data(t_data *data, int argc, char **argv)
-{
-	memset(data, 0, sizeof(t_data));
-	data->philo_num = ft_modified_atoi(argv[1]);
-	data->time_die = ft_modified_atoi(argv[2]);
-	data->time_eat = ft_modified_atoi(argv[3]);
-	data->time_sleep = ft_modified_atoi(argv[4]);
-	data->num_must_eat = -1;
-	data->state = ALIVE;
-	if (argc == 6)
-		data->num_must_eat = ft_modified_atoi(argv[5]);
-	if (data->philo_num <= 0 || data->time_die <= 0 || data->time_eat <= 0
-		|| data->time_sleep <= 0 || (argc == 6 && data->num_must_eat < 0))
-		return (1);
-	data->fork = malloc(data->philo_num * sizeof(pthread_mutex_t));
-	if (!data->fork)
-		return (1);
-	if (init_data_fy_norminette(data))
-	{
-		free(data->fork);
-		return (1);
-	}
-	data->time_start = get_time_mili();
-	return (0);
-}
-
 int	main(int argc, char **argv)
 {
 	t_data		data;
@@ -105,14 +75,18 @@ int	main(int argc, char **argv)
 	}
 	philo = malloc(data.philo_num * sizeof(t_philo));
 	if (!philo)
+	{
+		ft_free(1, &data, philo, NULL);
 		return (1);
+	}
 	thread_philo = malloc(data.philo_num * sizeof(pthread_t));
 	if (!thread_philo)
+	{
+		ft_free(2, &data, philo, thread_philo);
 		return (1);
+	}
 	if (setting_up_philo(&data, philo, thread_philo))
 		return (1);
-	free(data.fork);
-	free(philo);
-	free(thread_philo);
+	ft_free(2, &data, philo, thread_philo);
 	return (0);
 }

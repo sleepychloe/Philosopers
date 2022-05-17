@@ -52,10 +52,14 @@ typedef struct s_philo
 }		t_philo;
 
 int		ft_modified_atoi(const char *str);
+void	ft_free(int flag, t_data *data, t_philo *philo,
+			pthread_t *thread_philo);
 void	err_msg(void);
 size_t	get_time_mili(void);
 size_t	get_time_micro(void);
 void	fy_usleep(size_t timecheck);
+int		init_data_fy_norminette(t_data *data);
+int		init_data(t_data *data, int argc, char **argv);
 void	philo_print(t_philo *philo, const char *string);
 int		monitoring(t_philo *philo, t_data *data);
 int		death_checker(t_philo *philo);
@@ -64,9 +68,8 @@ void	philo_eat(t_philo *philo, int *cnt_eat);
 int		take_two_forks(t_philo *philo);
 void	*philo_start(void *param);
 int		init_philo(t_philo *philo, t_data *data, int i);
+void	philo_num_is_one(t_data *data);
 int		setting_up_philo(t_data *data, t_philo *philo, pthread_t *thread_philo);
-int		init_data_fy_norminette(t_data *data);
-int		init_data(t_data *data, int argc, char **argv);
 int		main(int argc, char **argv);
 
 #endif

@@ -40,6 +40,21 @@ int	ft_modified_atoi(const char *str)
 	return (nbr);
 }
 
+void	ft_free(int flag, t_data *data, t_philo *philo, pthread_t *thread_philo)
+{
+	if (flag == 1)
+	{
+		free(data->fork);
+		free(philo);
+	}
+	else if (flag == 2)
+	{
+		free(data->fork);
+		free(philo);
+		free(thread_philo);
+	}
+}
+
 void	err_msg(void)
 {
 	printf("************************************************************\n");

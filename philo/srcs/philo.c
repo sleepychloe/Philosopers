@@ -70,7 +70,7 @@ void	*philo_start(void *param)
 	philo = param;
 	cnt_eat = -1;
 	philo_eat(philo, &cnt_eat);
-	usleep((philo->id % 2) * 200);
+	usleep((philo->id % 2) * 300);
 	while (cnt_eat != philo->data->num_must_eat && death_checker(philo) == 0)
 	{
 		philo_print(philo, "is thinking");
