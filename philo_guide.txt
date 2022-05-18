@@ -1,0 +1,185 @@
+********** main.c **********
+
+main()
+	- parses and initializes data structure using init_data().
+	- if argc is not 5 or 6, prints error message.
+	- allocates memory for philosopher structures(philo_num * t_philo).
+	- allocates memory for philosopher threads(philo_num * pthread_t).
+	- starts setting_up_philo() function.
+	- frees everything i allocated using ft_free().
+	
+setting_up_philo()
+	- check if philo_num is 1.
+	- when the number of philosopher is 1, go to philo_num_is_one() function,
+	  since he can't eat when philo_num is 1, frees allocated fork,
+	  philosopher structure, and philosopher thread after printing the strings,
+	  and then return 1(program ends).
+	- (when philo_num is more than 1)
+	  initializes philosopher structure using init_philo().
+	- creates philosopher threads using pthread_create()
+	  and the philosophers will start their routine(eat, think, sleep)
+	  using philo_start().
+	- checks if they ate at the proper time without being starving
+	  using monitoring().
+	- wait until they finish their routime and then terminate philosopher threads
+	  using pthread_join().
+	
+philo_num_is_one()
+	- i didn't created thread when there's only one philosopher.
+	- i already allocated fork using malloc before.
+	- inside the philosopher structure, there's 2 forks,
+	  one is for left side and the other is for right side. 
+	  if i initialize this structure, the left fork and the right fork point
+	  the same one fork.
+	- because of this reason i can't properly free because the number of fork
+	  is actually one.
+	- so i dicided not to create when there's only one philosopher.
+	- this function just prints that he started to think, picked a fork,
+	  and died after passing time_die.
+
+init_philo()
+	- inits and puts value to philosopher structure.
+	- at first, put 0 to every element of philosopher structure using memset().
+	- put i + 1 to id(i did +1 because philosopher number starts with 0).
+	- put data structure to data.
+	- put data->fork[i] to left_fork.
+	- put data->fork[(i + 1) % data->philo_num] to right_fork.
+	  (let's say there're 5 philosophers and philo 5 wants to eat.
+	   then he needs fork 5 on left hand and fork 1 in right hand.
+	   to express fork 1, we can do (5 + 1) % 5(== 6 % 5 == 1))
+	- put the result of get_time_mili() to time_last,
+	  to remember the last time he ate.
+
+********** init.c **********
+
+init_data()
+	-inits and puts value to data structure.
+	- at first, put 0 to every element of data structure using memset().
+	- put argv[1] to philo_num using ft_modified_atoi().
+	- put argv[2] to time_die using ft_modified_atoi().
+	- put argv[3] to time_eat using ft_modified_atoi().
+	- put argv[4] to time_sleep using ft_modified_atoi().
+	- put -1 to num_must_eat.
+	- state is ALIVE.
+	- if argc is 6, put argv[5] to num_must_eat using ft_modified_atoi().
+	- allocates memory for fork.
+	- inits mutex using init_data_fy_norminette().
+	- put the result of get_time_mili() to time_start, to remember the start time.
+	
+init_data_fy_norminette()
+	- inits fork mutex as many as the number of philosopher.
+	- inits changing_state mutex.
+	  (i'll use this mutex when i change the state of each philosopher
+	   (ex : change to COMPLETE from ALIVE))
+	- inits mutex for printing.
+	  (i'll usethis mutex when i print string
+	   (ex : 1 1 is thinking))
+	   
+********** philo.c **********
+
+philo_start()
+	- put -1 in cnt_eat because i want philosopher to think before eat
+	  (while waiting his turn).
+	- go to the philo_eat(). if it's the first time to go to the philo_eat(),
+	  he'll not eat and just do cnt_eat += 1.
+	- make of philosopher whose id is odd number to wait for 300 miliseconds
+	  not of neighbour philosophers(ex : 1 and 2) to eat at the same time
+	  (because of the fork -> neighbour shares fork that is between of them).
+	- check if cnt_eat is not same as num_must->eat,
+	  and if he's alive using death_checker().
+	- make him to think(just print that he's thinking) using philo_print().
+	- make him to pick forks. if he fails to tkae 2 fork, break.
+	- make him to eat for time_eat microseconds using fy_usleep.
+	- unlock the left fork mutex.
+	- unlock the right fork mutex.
+	- print that he's sleeping using philo_print().
+	- make him to sleep for time_sleep microseconds using fy_usleep.
+	- change his state from ALIVE to COMPLETE using philo_state().
+	  
+philo_eat()
+	- lock the dining mutex.
+	- rus get_time_mili() to keep the last time he 
+	  enter to this function.
+	- check if cnt_eat is -1 and if it's -1, do cnt_eat += 1.
+	- if it's not -1, print that he's eating using philo_print()
+	  and then cnt_eat += 1.
+	- unlock the dining mutex.
+
+death_checker()
+	- make sign variable and initialize it to 0.
+	- lock the changing_state mutex.
+	- check if he's state is DEAD, and if it is DEAD state, change the sign to 1.
+	- unlock the changing_state mutex and return the sign.
+	
+take_two_forks()
+	- lock the left fork mutex.
+	- check if he's alive using death_checker() and if his state is DEAD,
+	  unlock the left fork mutex and return 1.
+	- print that he has taken a fork using philo_print().
+	- lock the right fork mutex.
+	- check if he's alive using death_checker() and if his state is DEAD,
+	  unlock the left fork mutex and right_fork mutex.
+	- print that he has taken a fork using philo_print().
+
+philo_state()
+	- lock the changing_state mutex.
+	- check if hes state is ALIVE, and if it is, change it to COMPLETE.
+	- unlock the changing_state mutex.
+
+********** philo_util.c **********
+
+philo_print()
+	- lock the printing mutex.
+	- prints the timestamp.
+	- prints the id of the philosopher.
+	- prints the string that if he is thinking, he is eating, he is sleeping,
+	  he taken a fork, or he is dead.
+	- unlock the printing mutex.
+	
+monitoring()
+	- check if the philosopher is died or not.
+	- lock the dining mutex.
+	- check if he's not starving
+	  (compare current time - last time he ate with time_die).
+	- if he's starving, lock the changing_state mutex,
+	  change his state to DEAD, print that he has died using philo_print(),
+	  and unlock the changing_state.
+	- unlock the dining mutex.
+
+**********  time.c **********
+
+get_time_mili()
+	- the result of this function is current time(unit : milisecond).
+	- do *1000 after getting current time in sec(current.tv_sec) for space
+	  for current time in usec(current.tv_usec).
+	- do /1000 after getting current time in usec(current.tv_usec)
+	  because it'll give us 6 digit number(to abandon right side 3 digit number).
+	
+get_time_micro()
+	- the result of this function is current time (unit : microsecond).
+	- it's more precise than get_time_mili() function
+	  since i did /1000 after getting current time in usec(current.tv_usec)
+	  in the get_time_mili() function.
+	- becuase of preciseness, i'll use this function when i calculate exact time
+	  (ex : how many time the philo spent to eat, ...) in the fy_usleep() fnction.
+	  
+fy_usleep()
+	- i use this function because using usleep() in this program is unstable.
+	- for example, usleep(100) only gurantees at least 100 miliseconds.
+	  it means, it may take longer time than 100 miliseconds if i use usleep(100).
+	- it calculates more exact time than usleep().
+	
+********** util.c **********
+
+ft_modified_atoi()
+	- changes the value of the input from char to int.
+	- the logic is same as ft_atoi() in libft but this is simpler.
+
+ft_free()
+	- frees the memory i allocated before.
+	- when a flag is 1, free the forks and each philosopher structure.
+	- when a flag is 2, free the forks each philosopher structure,
+	  and each philosopher thread.
+	
+err_msg()
+	- prints error message.
