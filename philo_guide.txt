@@ -183,3 +183,9 @@ ft_free()
 	
 err_msg()
 	- prints error message.
+	
+********************
+
+Before submitting the project, don't forget to check if there's data race
+with "-fsanitize=thread" flag.
+
