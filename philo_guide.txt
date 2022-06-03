@@ -161,7 +161,7 @@ get_time_micro()
 	  since i did /1000 after getting current time in usec(current.tv_usec)
 	  in the get_time_mili() function.
 	- becuase of preciseness, i'll use this function when i calculate exact time
-	  (ex : how many time the philo spent to eat, ...) in the fy_usleep() fnction.
+	  (ex : how much time the philo spent to eat, ...) in the fy_usleep() fnction.
 	  
 fy_usleep()
 	- i use this function because using usleep() in this program is unstable.
