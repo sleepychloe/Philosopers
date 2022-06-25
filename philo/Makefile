@@ -6,7 +6,7 @@
 #    By: yhwang <yhwang@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/16 04:37:55 by yhwang            #+#    #+#              #
-#    Updated: 2022/05/17 16:55:24 by yhwang           ###   ########.fr        #
+#    Updated: 2022/06/25 23:40:04 by yhwang           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,7 @@ OBJS = $(addprefix $(SRCS_DIR)/, $(addsuffix .o, $(FILES)))
 
 all: $(NAME)
 
-$(NAME): $(SRCS)
+$(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -pthread $^ -o $@
 
 clean:
