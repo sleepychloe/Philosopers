@@ -15,6 +15,7 @@ Success 100/100
 ## Usage
 
 ```bash
+  ./philo [num_of_philo] [time_to_die] [time_to_eat] [time_to_sleep]
   ./philo [num_of_philo] [time_to_die] [time_to_eat] [time_to_sleep] [num_of_time_each_philo_must_eat]
 ```
 
